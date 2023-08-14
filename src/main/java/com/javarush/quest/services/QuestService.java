@@ -1,28 +1,34 @@
 package com.javarush.quest.services;
 
-import com.javarush.quest.model.Quest;
+import com.javarush.quest.model.*;
 import com.javarush.quest.repository.QuestRepository;
 import com.javarush.quest.repository.QuestRepositoryImpl;
-
-import java.util.Collection;
-import java.util.Optional;
+import com.javarush.quest.repository.UserRepository;
+import com.javarush.quest.repository.UserRepositoryImpl;
 
 public enum QuestService {
 
     QUEST_SERVICE;
 
     private final QuestRepository questRepository = new QuestRepositoryImpl();
+    private final UserRepository userRepository = new UserRepositoryImpl();
 
-    public Collection<Quest> getAll() {
-        return questRepository.getAll();
+    public User registerUser(String name) {
+        return userRepository.registerUser(name);
     }
 
-    public Optional<Quest> get(long id) {
-        return questRepository.get(id);
+    public Situation getSituation(long id) {
+        return questRepository.getSituation(id);
     }
 
-    public String getVictoryMessage() {
-        return questRepository.getVictoryMessage();
+    public Option selectOption(long id, User user) {
+        Option option = questRepository.getOption(id);
+        if (option instanceof OptionWinning) {
+            userRepository.addWinning(user);
+        } else if (option instanceof OptionLosing) {
+            userRepository.addLosing(user);
+        }
+        return option;
     }
-
 }
+
